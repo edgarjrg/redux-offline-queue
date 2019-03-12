@@ -8,6 +8,7 @@
 const DEFAULT_CONFIG = {
   stateName: 'offline',
   additionalTriggers: [],
+  enqueueTransform: undefined
 }
 
 /**

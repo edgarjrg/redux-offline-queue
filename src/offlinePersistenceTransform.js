@@ -1,11 +1,11 @@
 import { createTransform } from 'redux-persist'
 import _ from 'lodash'
 
-const OMIT_KEYS = ['isConnected']
+const OMIT_KEYS = ['autoEnqueue']
 
 /**
  * Custom redux-persist transformation
- * to omit persisting `isConnected` key from offline queue.
+ * to omit persisting `autoEnqueue` key from offline queue.
  */
 export default createTransform(
   inboundState => _.omit(inboundState, OMIT_KEYS),

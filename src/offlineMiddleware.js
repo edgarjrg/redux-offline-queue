@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
 import INITIAL_STATE from './initialState'
-import { QUEUE_ACTION, ONLINE, RESET_QUEUE } from './actions'
+import { QUEUE_ACTION, ONLINE, RESET_QUEUE, RETRY_ALL } from './actions'
 import getConfig from './config'
 
 /**
@@ -67,12 +67,12 @@ export default function offlineMiddleware(userConfig = {}) {
 
     const state = _.get(getState(), stateName, INITIAL_STATE)
 
-    const { isConnected } = state
+    const { autoEnqueue } = state
 
-    if (action.type === ONLINE || _.includes(additionalTriggers, action.type)) {
+    if (action.type === RETRY_ALL || _.includes(additionalTriggers, action.type)) {
       const result = next(action)
       const { queue } = _.get(getState(), stateName)
-      const canFireQueue = isConnected || action.type === ONLINE
+      const canFireQueue = !autoEnqueue || action.type === RETRY_ALL
       if (canFireQueue) {
         fireQueuedActions(queue, dispatch)
         dispatch({ type: RESET_QUEUE })
@@ -82,7 +82,7 @@ export default function offlineMiddleware(userConfig = {}) {
 
     const shouldQueue = _.get(action, ['meta', 'queueIfOffline'], false)
 
-    if (isConnected || !shouldQueue) {
+    if (!autoEnqueue || !shouldQueue) {
       return next(action)
     }
 
