@@ -12,6 +12,7 @@ export const OFFLINE = `${ACTION_PREFIX}OFFLINE`
 export const AUTO_ENQUEUE = `${ACTION_PREFIX}AUTO_ENQUEUE`
 export const RETRY_ALL = `${ACTION_PREFIX}RETRY_ALL`
 export const RETRY = `${ACTION_PREFIX}RETRY`
+export const REMOVE = `${ACTION_PREFIX}REMOVE`
 
 /**
  * Internal actions.

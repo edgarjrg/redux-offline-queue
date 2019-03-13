@@ -33,6 +33,10 @@ export function generateFirstState2SecondStateAction(queue) {
 
 export function generateFirstState2ThirdStateAction(queue) {
 
+    return faker.random.arrayElement([
+        generateAutoEnqueueActionTrue(queue)
+    ])
+
 }
 
 export function generateFirstState2FourthStateAction(queue) {

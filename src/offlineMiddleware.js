@@ -80,7 +80,7 @@ export default function offlineMiddleware(userConfig = {}) {
       return result
     }
 
-    const shouldQueue = _.get(action, ['meta', 'queueIfOffline'], false)
+    const shouldQueue = _.get(action, ['meta', 'queue', 'enqueue'], false)
 
     if (!autoEnqueue || !shouldQueue) {
       return next(action)

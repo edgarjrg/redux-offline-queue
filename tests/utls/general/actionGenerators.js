@@ -1,10 +1,13 @@
-import { AUTO_ENQUEUE, RETRY_ALL, RETRY, QUEUE_ACTION } from "../../../src/actions";
+import { AUTO_ENQUEUE, RETRY_ALL, RETRY, QUEUE_ACTION, REMOVE } from "../../../src/actions";
 import faker from 'faker';
+import uuid from 'uuid/v1'
 
 export function generateQueueableAction() {
     return {
         type: faker.random.word(),
         payload: {
+        },
+        meta: {
             queue: {
                 enqueue: true
             }
@@ -32,8 +35,11 @@ export function generateQueueableActionNotInQueue(queue) {
     return {
         type: faker.random.word(),
         payload: {
+        },
+        meta: {
             queue: {
                 enqueue: true
+
             }
         }
     }
@@ -73,12 +79,9 @@ export function generateEnqueueActionActionNotInQueue(queue) {
 }
 
 export function generateEnqueueActionActionInQueue(queue) {
-    if (actionToQueue) {
-        return {
-            type: QUEUE_ACTION,
-            payload: generateQueueableActionInQueue(queue)
-        }
-
+    return {
+        type: QUEUE_ACTION,
+        payload: generateQueueableActionInQueue(queue)
     }
 }
 
@@ -94,6 +97,40 @@ export function generateRetryActionActionInQueue(queue) {
     return {
         type: RETRY,
         payload: generateQueueableActionInQueue(queue)
+    }
+
+}
+
+export function generateRemoveActionActionNotInQueue(queue) {
+
+    return {
+        type: REMOVE,
+        payload: generateQueueableActionNotInQueue(queue)
+    }
+
+}
+
+export function generateRemoveActionActionInQueue(queue) {
+
+    return {
+        type: REMOVE,
+        payload: generateQueueableActionInQueue(queue)
+    }
+
+}
+
+export function generateActionInQueue(queue) {
+
+    return {
+        type: faker.random.word(),
+        payload: {
+        },
+        meta: {
+            queue: {
+                enqueue: true,
+                id: uuid()
+            }
+        }
     }
 
 }

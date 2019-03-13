@@ -1,7 +1,8 @@
 import { REHYDRATE } from 'redux-persist'
+import { get, filter } from "lodash";
 
 import INITIAL_STATE from './initialState'
-import { QUEUE_ACTION, ONLINE, OFFLINE, RESET_QUEUE, AUTO_ENQUEUE } from './actions'
+import { QUEUE_ACTION, ONLINE, OFFLINE, RESET_QUEUE, AUTO_ENQUEUE, REMOVE } from './actions'
 
 /**
  * Reducer for the offline queue.
@@ -30,6 +31,16 @@ export default function reducer(state = INITIAL_STATE, action = {}) {
       return { ...state, autoEnqueue: true }
     case RESET_QUEUE:
       return { ...state, queue: [] }
+    case REMOVE:
+      const removeId = get(action, 'payload.meta.queue.id')
+
+      return {
+        ...state,
+        queue: filter(state.queue, action => {
+          const actionId = get(action, 'meta.queue.id')
+          return removeId !== actionId
+        })
+      }
     default:
       return state
   }

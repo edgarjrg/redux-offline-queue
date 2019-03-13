@@ -1,7 +1,7 @@
 import initialState from '../../../src/initialState'
 import { wholePipeline } from "../general/tearup";
 import {
-    generateFirstState2FirstStateAction,
+    // generateFirstState2FirstStateAction,
     generateFirstState2SecondStateAction,
     generateFirstState2ThirdStateAction,
     generateFirstState2FourthStateAction,
@@ -9,8 +9,12 @@ import {
     // generateFirstState2SixthStateAction,
 } from "./actionGenerators";
 
+import {
+    generateNonQueueableAction
+} from "../general/actionGenerators";
+
 export function FirstState2FirstStateBeforeEach() {
-    const action = generateFirstState2FirstStateAction();
+    const action = generateNonQueueableAction();
     const startState = { offline: { ...initialState } }
     const pipeline = wholePipeline()
 

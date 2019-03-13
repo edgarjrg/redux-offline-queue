@@ -3,7 +3,7 @@ import offlineMiddleware from '../../../src/offlineMiddleware';
 import suspendSaga from '../../../src/suspendSaga';
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
-export function wholePipeline() {
+export function wholePipeline(preloadState) {
 
     const gotToReducerSpy = jest.fn();
     const sagaMiddlewareSpy = jest.fn()
@@ -11,6 +11,7 @@ export function wholePipeline() {
         combineReducers({
             offline: reducer
         }),
+        preloadState,
         applyMiddleware(
             offlineMiddleware(),
             suspendSaga(
