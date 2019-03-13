@@ -13,12 +13,13 @@ import {
     RETRY_ACTION_NOT_IN_QUEUE,
     RETRY_ACTION_IN_QUEUE,
     RETRY_ALL,
+    ACTION_IN_QUEUE,
     generateAction
-} from "./utls/firstState/actions";
+} from "./utils/actions";
 
 describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
-    const actionInQueue1 = generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE)
+    const actionInQueue1 = generateAction(ACTION_IN_QUEUE)
     const secondState = {
         offline: {
             autoEnqueue: false,
@@ -163,16 +164,15 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
     describe(REMOVE_ACTION_IN_QUEUE, () => {
 
-        it('should go to fifth state', () => {
+        it('should go to first state', () => {
 
             times(100, () => {
 
                 const secondAction = generateAction(REMOVE_ACTION_IN_QUEUE, [actionInQueue1])
 
                 expect(secondState)
-                    .toSecondStateFromAction(
+                    .toFirstStateFromAction(
                         secondAction,
-                        actionInQueue1
                     )
             })
 

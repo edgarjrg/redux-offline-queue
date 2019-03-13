@@ -13,7 +13,7 @@ import {
     generateRemoveActionActionNotInQueue,
     generateRemoveActionActionInQueue,
     generateActionInQueue
-} from "../general/actionGenerators";
+} from "./actionGenerators";
 
 export const ANY_NON_QUEUEABLE_ACTION = 'ANY_NON_QUEUEABLE_ACTION';
 export const ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE = 'ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE'

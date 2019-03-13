@@ -14,7 +14,7 @@ import {
     REMOVE_ACTION_NOT_IN_QUEUE,
     REMOVE_ACTION_IN_QUEUE,
     generateAction,
-} from "./utls/firstState/actions";
+} from "./utils/actions";
 
 describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 

@@ -1,5 +1,5 @@
 import diff from "jest-diff";
-import { wholePipeline } from "../tests/utls/general/tearup";
+import { wholePipeline } from "../tests/utils/tearup";
 
 expect.extend({
 

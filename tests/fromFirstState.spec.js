@@ -13,7 +13,7 @@ import {
     generateRetryActionActionInQueue,
     generateRemoveActionActionNotInQueue,
     generateRemoveActionActionInQueue
-} from "./utls/general/actionGenerators";
+} from "./utils/actionGenerators";
 
 const ANY_NON_QUEUEABLE_ACTION = 'ANY_NON_QUEUEABLE_ACTION';
 const ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE = 'ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE'

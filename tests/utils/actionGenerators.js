@@ -1,4 +1,4 @@
-import { AUTO_ENQUEUE, RETRY_ALL, RETRY, QUEUE_ACTION, REMOVE } from "../../../src/actions";
+import { AUTO_ENQUEUE, RETRY_ALL, RETRY, QUEUE_ACTION, REMOVE } from "../../src/actions";
 import faker from 'faker';
 import uuid from 'uuid/v1'
 
