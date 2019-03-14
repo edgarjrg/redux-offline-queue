@@ -1,4 +1,4 @@
-import { times } from "lodash";
+import { times } from "ramda";
 
 import {
     ANY_NON_QUEUEABLE_ACTION,
@@ -15,10 +15,11 @@ import {
     REMOVE_ACTION_IN_QUEUE,
     generateAction,
 } from "./utils/actions";
+import { incrementMetaCounter } from "./utils/utils";
 
 describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
-    const secondState = {
+    const thirdState = {
         offline: {
             autoEnqueue: true,
             queue: []
@@ -29,13 +30,14 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to third state', () => {
 
-            times(100, () => {
-                expect(secondState)
+            times(() => {
+                expect(thirdState)
                     .toThirdStateFromAction(
                         generateAction(ANY_NON_QUEUEABLE_ACTION),
                     )
-            })
-
+            },
+                100
+            )
         })
 
     })
@@ -44,15 +46,18 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to fourth state', () => {
 
-            times(100, () => {
-                const secondAction = generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE)
+            times(
+                () => {
+                    const secondAction = generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE)
 
-                expect(secondState)
-                    .toFourthStateFromAction(
-                        secondAction,
-                        secondAction
-                    )
-            })
+                    expect(thirdState)
+                        .toFourthStateFromCreationAction(
+                            secondAction,
+                            incrementMetaCounter(secondAction)
+                        )
+                },
+                100
+            )
 
         })
 
@@ -60,7 +65,7 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
     describe(ANY_QUEUEABLE_ACTION_IN_QUEUE, () => {
 
-        it('should be impossible')
+        it('should be impossible', () => { })
 
     })
 
@@ -69,13 +74,16 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to third state', () => {
 
-            times(100, () => {
+            times(
+                () => {
 
-                expect(secondState)
-                    .toThirdStateFromAction(
-                        generateAction(AUTO_ENQUEUE_TRUE),
-                    )
-            })
+                    expect(thirdState)
+                        .toThirdStateFromAction(
+                            generateAction(AUTO_ENQUEUE_TRUE),
+                        )
+                },
+                100
+            )
 
         })
 
@@ -85,13 +93,16 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to first state', () => {
 
-            times(100, () => {
+            times(
+                () => {
 
-                expect(secondState)
-                    .toFirstStateFromAction(
-                        generateAction(AUTO_ENQUEUE_FALSE),
-                    )
-            })
+                    expect(thirdState)
+                        .toFirstStateFromAction(
+                            generateAction(AUTO_ENQUEUE_FALSE),
+                        )
+                },
+                100
+            )
 
         })
 
@@ -101,13 +112,15 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to third state', () => {
 
-            times(100, () => {
-
-                expect(secondState)
-                    .toThirdStateFromAction(
-                        generateAction(RETRY_ALL),
-                    )
-            })
+            times(
+                () => {
+                    expect(thirdState)
+                        .toThirdStateFromAction(
+                            generateAction(RETRY_ALL),
+                        )
+                },
+                100
+            )
 
         })
 
@@ -117,16 +130,19 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to fourth state', () => {
 
-            times(100, () => {
+            times(
+                () => {
 
-                const action = generateAction(ENQUEUE_ACTION_NOT_IN_QUEUE);
+                    const action = generateAction(ENQUEUE_ACTION_NOT_IN_QUEUE);
 
-                expect(secondState)
-                    .toFourthStateFromAction(
-                        action,
-                        action.payload
-                    )
-            })
+                    expect(thirdState)
+                        .toFourthStateFromCreationAction(
+                            action,
+                            incrementMetaCounter(action.payload)
+                        )
+                },
+                100
+            )
 
         })
 
@@ -134,20 +150,7 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
     describe(ENQUEUE_ACTION_IN_QUEUE, () => {
 
-        it('should go to fourth state', () => {
-
-            times(100, () => {
-
-                const action = generateAction(ENQUEUE_ACTION_IN_QUEUE);
-
-                expect(secondState)
-                    .toFourthStateFromAction(
-                        action,
-                        action.payload
-                    )
-            })
-
-        })
+        it('should be impossible', () => { })
 
     })
 
@@ -155,15 +158,18 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to third state', () => {
 
-            times(100, () => {
+            times(
+                () => {
 
-                const action = generateAction(RETRY_ACTION_NOT_IN_QUEUE);
+                    const action = generateAction(RETRY_ACTION_NOT_IN_QUEUE);
 
-                expect(secondState)
-                    .toThirdStateFromAction(
-                        action,
-                    )
-            })
+                    expect(thirdState)
+                        .toThirdStateFromAction(
+                            action,
+                        )
+                },
+                100
+            )
 
         })
 
@@ -171,7 +177,7 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
     describe(RETRY_ACTION_IN_QUEUE, () => {
 
-        it('should be impossible')
+        it('should be impossible', () => { })
 
     })
 
@@ -179,15 +185,18 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to third state', () => {
 
-            times(100, () => {
+            times(
+                () => {
 
-                const action = generateAction(REMOVE_ACTION_NOT_IN_QUEUE);
+                    const action = generateAction(REMOVE_ACTION_NOT_IN_QUEUE);
 
-                expect(secondState)
-                    .toThirdStateFromAction(
-                        action,
-                    )
-            })
+                    expect(thirdState)
+                        .toThirdStateFromAction(
+                            action,
+                        )
+                },
+                100
+            )
 
         })
 
@@ -195,7 +204,7 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
     describe(REMOVE_ACTION_IN_QUEUE, () => {
 
-        it('should be impossible')
+        it('should be impossible', () => { })
 
     })
 })

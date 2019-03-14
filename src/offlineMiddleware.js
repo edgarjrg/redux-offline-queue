@@ -1,8 +1,11 @@
 import _ from 'lodash'
 
 import INITIAL_STATE from './initialState'
-import { QUEUE_ACTION, ONLINE, RESET_QUEUE, RETRY_ALL } from './actions'
+import { QUEUE_ACTION, ONLINE, RESET_QUEUE, RETRY_ALL, RETRY, REMOVE } from './actions'
 import getConfig from './config'
+import { over } from 'ramda';
+import { metaPath } from '../tests/utils/utils';
+import uuid from 'uuid/v1'
 
 /**
  * Helper method to dispatch the queued action again when the connection is available.
@@ -62,7 +65,23 @@ function fireQueuedActions(queue, dispatch) {
  */
 export default function offlineMiddleware(userConfig = {}) {
   return ({ getState, dispatch }) => next => (action) => {
+
     const config = getConfig(userConfig)
+
+    const cosita = {
+      getState,
+      dispatch,
+      next,
+      action,
+      config
+    }
+
+    if (isRetry(cosita)) {
+      return retry(cosita)
+    } else if (isQueueable(cosita)) {
+      return queue(cosita)
+    }
+
     const { stateName, additionalTriggers } = config
 
     const state = _.get(getState(), stateName, INITIAL_STATE)
@@ -88,9 +107,7 @@ export default function offlineMiddleware(userConfig = {}) {
 
     const actionToQueue = {
       type: QUEUE_ACTION,
-      payload: {
-        ...action,
-      },
+      payload: { ...action },
     }
 
     dispatch(actionToQueue)
@@ -102,4 +119,59 @@ export default function offlineMiddleware(userConfig = {}) {
 
     return next(skipSagaAction)
   }
+}
+
+function isRetry({ getState, dispatch, next, action }) {
+  return action.type === RETRY
+}
+
+function retry({ getState, dispatch, next, action, config }) {
+
+  const { stateName } = config
+
+  const state = _.get(getState(), stateName, INITIAL_STATE)
+
+  const { queue } = state
+
+  const actionToRetry = _.find(
+    queue,
+    actionInQueue => {
+      const idOfActionInQueue = _.get(actionInQueue, 'meta.queue.id')
+      const idOfActionToRetry = _.get(action, 'payload.meta.queue.id')
+
+      return (
+        idOfActionInQueue &&
+        idOfActionToRetry &&
+        (idOfActionInQueue === idOfActionToRetry)
+      )
+    }
+  )
+
+  const nextResult = next(action)
+  if (actionToRetry) {
+
+    const actionToRemove = {
+      type: REMOVE,
+      payload: { ...actionToRetry }
+    }
+    dispatch(actionToRemove)
+    dispatch(actionToRetry)
+  }
+
+  return nextResult;
+}
+
+function isQueueable({ action }) {
+  return _.get(action, ['meta', 'queue', 'enqueue'], false)
+}
+
+function queue({ getState, dispatch, next, action, config }) {
+  // console.log(JSON.stringify(action))
+  const actionToQueue = {
+    type: QUEUE_ACTION,
+    payload: { ...action }
+  }
+
+  dispatch(actionToQueue)
+
 }

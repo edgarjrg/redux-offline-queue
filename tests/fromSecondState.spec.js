@@ -1,4 +1,4 @@
-import { times } from "lodash";
+import { times } from "ramda";
 
 import {
     ANY_NON_QUEUEABLE_ACTION,
@@ -16,8 +16,9 @@ import {
     ACTION_IN_QUEUE,
     generateAction
 } from "./utils/actions";
+import { incrementMetaCounter } from "./utils/utils";
 
-describe('state: {autoEnqueue: false, queue: [a]}}', () => {
+describe('from second state', () => {
 
     const actionInQueue1 = generateAction(ACTION_IN_QUEUE)
     const secondState = {
@@ -31,13 +32,16 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to second state', () => {
 
-            times(100, () => {
-                expect(secondState)
-                    .toSecondStateFromAction(
-                        generateAction(ANY_NON_QUEUEABLE_ACTION),
-                        actionInQueue1
-                    )
-            })
+            times(
+                () => {
+                    expect(secondState)
+                        .toSecondStateFromAction(
+                            generateAction(ANY_NON_QUEUEABLE_ACTION),
+                            actionInQueue1
+                        )
+                },
+                100
+            )
 
         })
 
@@ -45,15 +49,21 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
     describe(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE, () => {
 
-        it('should go to second state', () => {
+        it('should go to fifth state', () => {
 
-            times(100, () => {
-                expect(secondState)
-                    .toSecondStateFromAction(
-                        generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE),
-                        actionInQueue1
-                    )
-            })
+            const action = generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE)
+
+            times(
+                () => {
+                    expect(secondState)
+                        .toFiftStateFromCreationAction(
+                            action,
+                            actionInQueue1,
+                            incrementMetaCounter(action)
+                        )
+                },
+                100
+            )
 
         })
 
@@ -63,13 +73,17 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to second state', () => {
 
-            times(100, () => {
-                expect(secondState)
-                    .toSecondStateFromAction(
-                        generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, [actionInQueue1]),
-                        actionInQueue1
-                    )
-            })
+            times(
+                () => {
+                    expect(secondState)
+                        .toFiftStateFromCreationAction(
+                            generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, [actionInQueue1]),
+                            actionInQueue1,
+                            incrementMetaCounter(actionInQueue1)
+                        )
+                },
+                100
+            )
 
         })
 
@@ -79,13 +93,16 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to fourth state', () => {
 
-            times(100, () => {
-                expect(secondState)
-                    .toFourthStateFromAction(
-                        generateAction(AUTO_ENQUEUE_TRUE),
-                        actionInQueue1
-                    )
-            })
+            times(
+                () => {
+                    expect(secondState)
+                        .toFourthStateFromAction(
+                            generateAction(AUTO_ENQUEUE_TRUE),
+                            actionInQueue1
+                        )
+                },
+                100
+            )
 
         })
 
@@ -94,15 +111,16 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
     describe(AUTO_ENQUEUE_FALSE, () => {
 
         it('should go to second state', () => {
-
-            times(100, () => {
-                expect(secondState)
-                    .toSecondStateFromAction(
-                        generateAction(AUTO_ENQUEUE_FALSE),
-                        actionInQueue1
-                    )
-            })
-
+            times(
+                () => {
+                    expect(secondState)
+                        .toSecondStateFromAction(
+                            generateAction(AUTO_ENQUEUE_FALSE),
+                            actionInQueue1
+                        )
+                },
+                100
+            )
         })
 
     })
@@ -111,15 +129,18 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to first state', () => {
 
-            times(100, () => {
-                const secondAction = generateAction(ENQUEUE_ACTION_NOT_IN_QUEUE)
-                expect(secondState)
-                    .toFiftStateFromAction(
-                        secondAction,
-                        actionInQueue1,
-                        secondAction.payload
-                    )
-            })
+            times(
+                () => {
+                    const secondAction = generateAction(ENQUEUE_ACTION_NOT_IN_QUEUE)
+                    expect(secondState)
+                        .toFiftStateFromCreationAction(
+                            secondAction,
+                            actionInQueue1,
+                            incrementMetaCounter(secondAction.payload)
+                        )
+                },
+                100
+            )
 
         })
 
@@ -129,15 +150,18 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to fifth state', () => {
 
-            times(100, () => {
-                const secondAction = generateAction(ENQUEUE_ACTION_IN_QUEUE, [actionInQueue1])
-                expect(secondState)
-                    .toFiftStateFromAction(
-                        secondAction,
-                        actionInQueue1,
-                        secondAction.payload
-                    )
-            })
+            times(
+                () => {
+                    const secondAction = generateAction(ENQUEUE_ACTION_IN_QUEUE, [actionInQueue1])
+                    expect(secondState)
+                        .toFiftStateFromAction(
+                            secondAction,
+                            actionInQueue1,
+                            incrementMetaCounter(secondAction.payload)
+                        )
+                },
+                100
+            )
 
         })
 
@@ -147,16 +171,17 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to second state', () => {
 
-            times(100, () => {
-
-                const secondAction = generateAction(REMOVE_ACTION_NOT_IN_QUEUE, [actionInQueue1])
-
-                expect(secondState)
-                    .toSecondStateFromAction(
-                        secondAction,
-                        actionInQueue1
-                    )
-            })
+            times(
+                () => {
+                    const secondAction = generateAction(REMOVE_ACTION_NOT_IN_QUEUE, [actionInQueue1])
+                    expect(secondState)
+                        .toSecondStateFromAction(
+                            secondAction,
+                            actionInQueue1
+                        )
+                },
+                100
+            )
 
         })
 
@@ -166,15 +191,18 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to first state', () => {
 
-            times(100, () => {
+            times(
+                () => {
 
-                const secondAction = generateAction(REMOVE_ACTION_IN_QUEUE, [actionInQueue1])
+                    const secondAction = generateAction(REMOVE_ACTION_IN_QUEUE, [actionInQueue1])
 
-                expect(secondState)
-                    .toFirstStateFromAction(
-                        secondAction,
-                    )
-            })
+                    expect(secondState)
+                        .toFirstStateFromAction(
+                            secondAction,
+                        )
+                },
+                100
+            )
 
         })
 
@@ -183,17 +211,17 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
     describe(RETRY_ACTION_NOT_IN_QUEUE, () => {
 
         it('should go to fifth state', () => {
-
-            times(100, () => {
-
-                const secondAction = generateAction(RETRY_ACTION_NOT_IN_QUEUE, [actionInQueue1])
-
-                expect(secondState)
-                    .toSecondStateFromAction(
-                        secondAction,
-                        actionInQueue1
-                    )
-            })
+            times(
+                () => {
+                    const secondAction = generateAction(RETRY_ACTION_NOT_IN_QUEUE, [actionInQueue1])
+                    expect(secondState)
+                        .toSecondStateFromAction(
+                            secondAction,
+                            actionInQueue1
+                        )
+                },
+                100
+            )
 
         })
 
@@ -203,16 +231,17 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to fifth state', () => {
 
-            times(100, () => {
-
-                const secondAction = generateAction(RETRY_ACTION_IN_QUEUE, [actionInQueue1])
-
-                expect(secondState)
-                    .toSecondStateFromAction(
-                        secondAction,
-                        actionInQueue1
-                    )
-            })
+            times(
+                () => {
+                    const secondAction = generateAction(RETRY_ACTION_IN_QUEUE, [actionInQueue1])
+                    expect(secondState)
+                        .toSecondStateFromAction(
+                            secondAction,
+                            incrementMetaCounter(actionInQueue1)
+                        )
+                },
+                100
+            )
 
         })
 
@@ -222,15 +251,18 @@ describe('state: {autoEnqueue: false, queue: [a]}}', () => {
 
         it('should go to fifth state', () => {
 
-            times(100, () => {
+            times(
+                () => {
 
-                const secondAction = generateAction(RETRY_ALL, [actionInQueue1])
+                    const secondAction = generateAction(RETRY_ALL, [actionInQueue1])
 
-                expect(secondState)
-                    .toFirstStateFromAction(
-                        secondAction
-                    )
-            })
+                    expect(secondState)
+                        .toFirstStateFromAction(
+                            secondAction
+                        )
+                },
+                100
+            )
 
         })
 

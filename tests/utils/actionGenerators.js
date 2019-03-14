@@ -30,16 +30,12 @@ export function generateQueueableActionInQueue(queue) {
 
 }
 
-
 export function generateQueueableActionNotInQueue(queue) {
     return {
         type: faker.random.word(),
-        payload: {
-        },
         meta: {
             queue: {
                 enqueue: true
-
             }
         }
     }
@@ -128,7 +124,8 @@ export function generateActionInQueue(queue) {
         meta: {
             queue: {
                 enqueue: true,
-                id: uuid()
+                id: uuid(),
+                retry: 10
             }
         }
     }
