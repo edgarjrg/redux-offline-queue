@@ -69,7 +69,7 @@ export default function offlineMiddleware(userConfig = {}) {
 
     const config = getConfig(userConfig)
 
-    const cosita = {
+    const context = {
       getState,
       dispatch,
       next,
@@ -77,48 +77,41 @@ export default function offlineMiddleware(userConfig = {}) {
       config
     }
 
-    if (isRetry(cosita)) {
-      return retry(cosita)
-    } else if (isQueueable(cosita)) {
-      return queue(cosita)
-    }
-
-    const { stateName, additionalTriggers } = config
-
-    const state = _.get(getState(), stateName, INITIAL_STATE)
-
-    const { autoEnqueue } = state
-
-    if (autoEnqueue && action.type === RETRY_ALL || _.includes(additionalTriggers, action.type)) {
-      const result = next(action)
-      const { queue } = _.get(getState(), stateName)
-      const canFireQueue = !autoEnqueue || action.type === RETRY_ALL
-      if (canFireQueue) {
-        fireQueuedActions(queue, dispatch)
-      }
-      return result
-    }
-
-    const shouldQueue = _.get(action, ['meta', 'queue', 'enqueue'], false)
-
-    if (!autoEnqueue || !shouldQueue) {
+    if (isRetry(context)) {
+      return retry(context)
+    } else if (isQueueable(context)) {
+      return queue(context)
+    } else if (isRetryAll(context)) {
+      return retryAll(context)
+    } else {
       return next(action)
     }
 
-    const actionToQueue = {
-      type: QUEUE_ACTION,
-      payload: { ...action },
-    }
-
-    dispatch(actionToQueue)
-
-    const skipSagaAction = {
-      ...action,
-      skipSaga: true,
-    }
-
-    return next(skipSagaAction)
   }
+}
+
+function isRetryAll({ getState, dispatch, next, action, config }) {
+
+  const { stateName, additionalTriggers } = config
+
+  const state = _.get(getState(), stateName, INITIAL_STATE)
+
+  const { autoEnqueue } = state
+
+  return autoEnqueue && action.type === RETRY_ALL || _.includes(additionalTriggers, action.type)
+}
+
+function retryAll({ getState, dispatch, next, action, config }) {
+
+  const { stateName } = config
+
+  const result = next(action)
+  const { queue } = _.get(getState(), stateName)
+
+  fireQueuedActions(queue, dispatch)
+
+  return result
+
 }
 
 function isRetry({ getState, dispatch, next, action }) {
