@@ -2,6 +2,7 @@ import reducer from '../../src/reducer';
 import offlineMiddleware from '../../src/offlineMiddleware';
 import suspendSaga from '../../src/suspendSaga';
 import { createStore, applyMiddleware, combineReducers } from 'redux'
+import consumeActionMiddleware from '../../src/consumeActionMiddleware';
 
 export function wholePipeline(preloadState) {
 
@@ -12,18 +13,21 @@ export function wholePipeline(preloadState) {
             offline: reducer
         }),
         preloadState,
-        applyMiddleware(
-            offlineMiddleware(),
-            suspendSaga(
+        applyMiddleware
+            (
+                offlineMiddleware(),
+                suspendSaga(
+                    store => next => action => {
+                        sagaMiddlewareSpy(action);
+                        return next(action)
+                    }
+                ),
+                consumeActionMiddleware(),
                 store => next => action => {
-                    sagaMiddlewareSpy(action);
+                    gotToReducerSpy(action)
                     return next(action)
                 }
-            ),
-            store => next => action => {
-                gotToReducerSpy(action)
-                return next(action)
-            })
+            )
     );
 
     return {

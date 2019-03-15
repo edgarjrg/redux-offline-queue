@@ -5,12 +5,6 @@ import { omitQueuedActionsIdsFromState, omitId, allHaveId, omitLastQueuedActions
 expect.extend({
     toFirstStateFromAction(preloadedState, action) {
 
-        const options = {
-            comment: 'Object.is equality',
-            isNot: this.isNot,
-            promise: this.promise,
-        };
-
         const pipeline = wholePipeline(preloadedState)
 
         pipeline.store.dispatch(action)
@@ -27,25 +21,7 @@ expect.extend({
 
         return {
             pass,
-            message: pass
-                ? () =>
-                    this.utils.matcherHint('toBe', undefined, undefined, options) +
-                    '\n\n' +
-                    `Expected: ${this.utils.printExpected(expected)}\n` +
-                    `Received: ${this.utils.printReceived(received)}`
-                : () => {
-                    const difference = diff(expected, state, {
-                        expand: this.expand,
-                    });
-                    return (
-                        this.utils.matcherHint('toBe', undefined, undefined, options) +
-                        '\n\n' +
-                        (difference && difference.includes('- Expect')
-                            ? `Difference:\n\n${difference}`
-                            : `Expected: ${this.utils.printExpected(expected)}\n` +
-                            `Received: ${this.utils.printReceived(received)}`)
-                    );
-                }
+            message: generateMatcherDiffMessage.call(this, pass, state, expected)
         }
     },
     toSecondStateFromAction(preloadedState, action, actionInQueue) {
@@ -103,12 +79,6 @@ expect.extend({
     },
     toThirdStateFromAction(preloadedState, action) {
 
-        const options = {
-            comment: 'Object.is equality',
-            isNot: this.isNot,
-            promise: this.promise,
-        };
-
         const pipeline = wholePipeline(preloadedState)
 
         pipeline.store.dispatch(action)
@@ -125,34 +95,10 @@ expect.extend({
 
         return {
             pass,
-            message: pass
-                ? () =>
-                    this.utils.matcherHint('toBe', undefined, undefined, options) +
-                    '\n\n' +
-                    `Expected: ${this.utils.printExpected(expected)}\n` +
-                    `Received: ${this.utils.printReceived(received)}`
-                : () => {
-                    const difference = diff(expected, state, {
-                        expand: this.expand,
-                    });
-                    return (
-                        this.utils.matcherHint('toBe', undefined, undefined, options) +
-                        '\n\n' +
-                        (difference && difference.includes('- Expect')
-                            ? `Difference:\n\n${difference}`
-                            : `Expected: ${this.utils.printExpected(expected)}\n` +
-                            `Received: ${this.utils.printReceived(received)}`)
-                    );
-                }
+            message: generateMatcherDiffMessage.call(this, pass, state, expected)
         }
     },
     toFourthStateFromAction(preloadedState, action, actionInQueue) {
-
-        const options = {
-            comment: 'Object.is equality',
-            isNot: this.isNot,
-            promise: this.promise,
-        };
 
         const pipeline = wholePipeline(preloadedState)
 
@@ -170,25 +116,7 @@ expect.extend({
 
         return {
             pass,
-            message: pass
-                ? () =>
-                    this.utils.matcherHint('toBe', undefined, undefined, options) +
-                    '\n\n' +
-                    `Expected: ${this.utils.printExpected(expected)}\n` +
-                    `Received: ${this.utils.printReceived(received)}`
-                : () => {
-                    const difference = diff(expected, state, {
-                        expand: this.expand,
-                    });
-                    return (
-                        this.utils.matcherHint('toBe', undefined, undefined, options) +
-                        '\n\n' +
-                        (difference && difference.includes('- Expect')
-                            ? `Difference:\n\n${difference}`
-                            : `Expected: ${this.utils.printExpected(expected)}\n` +
-                            `Received: ${this.utils.printReceived(received)}`)
-                    );
-                }
+            message: generateMatcherDiffMessage.call(this, pass, state, expected)
         }
     },
     toFourthStateFromCreationAction(preloadedState, action, actionInQueue) {
@@ -275,12 +203,6 @@ expect.extend({
     },
     toSixthStateFromAction(preloadedState, action, ...queue) {
 
-        const options = {
-            comment: 'Object.is equality',
-            isNot: this.isNot,
-            promise: this.promise,
-        };
-
         const pipeline = wholePipeline(preloadedState)
 
         pipeline.store.dispatch(action)
@@ -297,25 +219,7 @@ expect.extend({
 
         return {
             pass,
-            message: pass
-                ? () =>
-                    this.utils.matcherHint('toBe', undefined, undefined, options) +
-                    '\n\n' +
-                    `Expected: ${this.utils.printExpected(expected)}\n` +
-                    `Received: ${this.utils.printReceived(received)}`
-                : () => {
-                    const difference = diff(expected, state, {
-                        expand: this.expand,
-                    });
-                    return (
-                        this.utils.matcherHint('toBe', undefined, undefined, options) +
-                        '\n\n' +
-                        (difference && difference.includes('- Expect')
-                            ? `Difference:\n\n${difference}`
-                            : `Expected: ${this.utils.printExpected(expected)}\n` +
-                            `Received: ${this.utils.printReceived(received)}`)
-                    );
-                }
+            message: generateMatcherDiffMessage.call(this, pass, state, expected)
         }
     },
     toSixthStateFromCreationAction(preloadedState, action, ...queue) {

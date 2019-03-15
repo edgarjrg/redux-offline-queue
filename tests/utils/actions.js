@@ -12,7 +12,8 @@ import {
     generateRetryActionActionInQueue,
     generateRemoveActionActionNotInQueue,
     generateRemoveActionActionInQueue,
-    generateActionInQueue
+    generateActionInQueue,
+    generateConsumeAction
 } from "./actionGenerators";
 
 export const ANY_NON_QUEUEABLE_ACTION = 'ANY_NON_QUEUEABLE_ACTION';
@@ -28,6 +29,7 @@ export const RETRY_ACTION_IN_QUEUE = 'RETRY_ACTION_IN_QUEUE'
 export const REMOVE_ACTION_NOT_IN_QUEUE = 'REMOVE_ACTION_NOT_IN_QUEUE'
 export const REMOVE_ACTION_IN_QUEUE = 'REMOVE_ACTION_IN_QUEUE'
 export const ACTION_IN_QUEUE = 'ACTION_IN_QUEUE'
+export const CONSUME_FIRST_FROM_QUEUE = 'CONSUME'
 
 export const actions = [
     ANY_NON_QUEUEABLE_ACTION,
@@ -73,5 +75,7 @@ export function generateAction(type, queue) {
             return generateRemoveActionActionInQueue(queue)
         case ACTION_IN_QUEUE:
             return generateActionInQueue()
+        case CONSUME_FIRST_FROM_QUEUE:
+            return generateConsumeAction(queue)
     }
 }

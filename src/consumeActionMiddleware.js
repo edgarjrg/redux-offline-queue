@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { CONSUME } from "./actions";
 
 /**
  * Custom middleware that can consume the action before it can reach the reducer.
@@ -18,10 +19,12 @@ import _ from 'lodash'
  */
 export default function consumeActionMiddleware() {
   return store => next => (action) => {
-    const shouldConsumeAction = _.get(action, 'consume', false)
+    const shouldConsumeAction = _.get(action, 'meta.queue.id', false)
+
     if (shouldConsumeAction) {
-      return next({ type: '@@CONSUME@@', payload: { ...action } })
+      return next({ type: CONSUME, payload: { ...action } })
     }
+
     return next(action)
   }
 }

@@ -13,10 +13,10 @@ export const AUTO_ENQUEUE = `${ACTION_PREFIX}AUTO_ENQUEUE`
 export const RETRY_ALL = `${ACTION_PREFIX}RETRY_ALL`
 export const RETRY = `${ACTION_PREFIX}RETRY`
 export const REMOVE = `${ACTION_PREFIX}REMOVE`
+export const CONSUME = `${ACTION_PREFIX}CONSUME`
 
 /**
  * Internal actions.
  * These are fired to manage the internal offline queue state.
  */
 export const QUEUE_ACTION = `${ACTION_PREFIX}QUEUE_ACTION`
-export const RESET_QUEUE = `${ACTION_PREFIX}RESET_QUEUE`

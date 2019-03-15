@@ -7,7 +7,6 @@ import {
   QUEUE_ACTION,
   ONLINE,
   OFFLINE,
-  RESET_QUEUE,
   AUTO_ENQUEUE,
   REMOVE,
   RETRY
@@ -40,18 +39,8 @@ export default function reducer(state = INITIAL_STATE, action = {}) {
       return { ...state, autoEnqueue: false }
     case OFFLINE:
       return { ...state, autoEnqueue: true }
-    case RESET_QUEUE:
-      return { ...state, queue: [] }
     case REMOVE:
-      const removeId = get(action, 'payload.meta.queue.id')
-
-      return {
-        ...state,
-        queue: filter(state.queue, action => {
-          const actionId = get(action, 'meta.queue.id')
-          return removeId !== actionId
-        })
-      }
+      return removeFromQueue(state, action)
     case RETRY:
       return state
     default:
@@ -71,6 +60,7 @@ function removeFromQueue(state, action) {
 }
 
 function enhace(action) {
+
   return over(
     metaPath,
     meta => ({
@@ -80,4 +70,5 @@ function enhace(action) {
     }),
     action
   )
+
 }

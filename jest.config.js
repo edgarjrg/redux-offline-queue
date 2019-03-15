@@ -1,4 +1,4 @@
 module.exports = {
-    "verbose": true,
-    setupTestFrameworkScriptFile: "<rootDir>/setupFiles/toFirstStateFromAction"
+  "verbose": true,
+  setupTestFrameworkScriptFile: "<rootDir>/setupFiles/"
 }

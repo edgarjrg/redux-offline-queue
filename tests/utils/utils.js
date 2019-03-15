@@ -1,4 +1,5 @@
-import { lensPath, over, omit, map, view, reduce, all, lensIndex, filter } from "ramda";
+import { lensPath, over, omit, map, view, reduce, all, lensIndex, filter, pipe } from "ramda";
+import { wholePipeline } from "./tearup";
 
 export function actionsLeft(queue, actionToFind) {
     return filter(
@@ -48,11 +49,10 @@ export function incrementMetaCounter(action) {
         metaPath,
         meta => ({
             ...meta,
-            times: 1
+            times: (meta.times || 0) + 1
         }),
         action
     )
-
 }
 
 export const omitLastQueuedActionsIdFromState = state => over(
@@ -66,3 +66,15 @@ export const omitLastQueuedActionsId = queue => over(
     omitId,
     queue
 )
+
+
+
+export function passThroughPipeline(preloadedState, action) {
+
+    const pipeline = wholePipeline(preloadedState)
+
+    pipeline.store.dispatch(action)
+
+    return pipeline
+
+}

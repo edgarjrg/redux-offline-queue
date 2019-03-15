@@ -1,4 +1,11 @@
-import { AUTO_ENQUEUE, RETRY_ALL, RETRY, QUEUE_ACTION, REMOVE } from "../../src/actions";
+import {
+    AUTO_ENQUEUE,
+    RETRY_ALL,
+    RETRY,
+    QUEUE_ACTION,
+    REMOVE,
+    CONSUME
+} from "../../src/actions";
 import faker from 'faker';
 import uuid from 'uuid/v1'
 
@@ -125,9 +132,21 @@ export function generateActionInQueue(queue) {
             queue: {
                 enqueue: true,
                 id: uuid(),
-                retry: 10
+                times: 10
             }
         }
     }
 
 }
+
+export function generateConsumeAction(queue) {
+
+    return {
+        type: CONSUME,
+        payload: {
+            ...queue[0]
+        },
+    }
+
+}
+

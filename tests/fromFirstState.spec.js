@@ -17,24 +17,55 @@ import {
     generateAction,
 } from "./utils/actions";
 
-import { incrementMetaCounter } from "./utils/utils";
-
+import { incrementMetaCounter, passThroughPipeline } from "./utils/utils";
 
 describe('from first state', () => {
+    const firstState = {
+        offline: {
+            autoEnqueue: false,
+            queue: []
+        }
+    }
 
     describe(ANY_NON_QUEUEABLE_ACTION, () => {
 
         it('should go to first state', () => {
 
             times(() => {
-                expect({
-                    offline: {
-                        autoEnqueue: false,
-                        queue: []
-                    }
-                }).toFirstStateFromAction(
-                    generateAction(ANY_NON_QUEUEABLE_ACTION)
-                )
+                expect(firstState)
+                    .toFirstStateFromAction(
+                        generateAction(ANY_NON_QUEUEABLE_ACTION)
+                    )
+            },
+                100
+            )
+
+        })
+
+        it('action should reach reducer', () => {
+            times(() => {
+                const action = generateAction(ANY_NON_QUEUEABLE_ACTION)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+                const action = generateAction(ANY_NON_QUEUEABLE_ACTION)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
             },
                 100
             )
@@ -65,6 +96,38 @@ describe('from first state', () => {
 
         })
 
+        it('action should reach reducer', () => {
+            times(() => {
+                const action = generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(2)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                    [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])]
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+                const action = generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])]
+                ])
+
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(ANY_QUEUEABLE_ACTION_IN_QUEUE, () => {
@@ -89,6 +152,38 @@ describe('from first state', () => {
             )
 
         })
+
+        it('action should reach reducer', () => {
+            times(() => {
+                const action = generateAction(AUTO_ENQUEUE_TRUE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
+                100
+            )
+
+        })
+
+
+        it('action should reach saga', () => {
+            times(() => {
+                const action = generateAction(AUTO_ENQUEUE_TRUE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
+
+            },
+                100
+            )
+
+        })
     })
 
     describe(AUTO_ENQUEUE_FALSE, () => {
@@ -96,14 +191,42 @@ describe('from first state', () => {
         it('should go to first state', () => {
 
             times(() => {
-                expect({
-                    offline: {
-                        autoEnqueue: false,
-                        queue: []
-                    }
-                }).toFirstStateFromAction(
-                    generateAction(AUTO_ENQUEUE_FALSE)
-                )
+                expect(firstState)
+                    .toFirstStateFromAction(
+                        generateAction(AUTO_ENQUEUE_FALSE)
+                    )
+            },
+                100
+            )
+
+        })
+
+        it('action should reach reducer', () => {
+            times(() => {
+                const action = generateAction(AUTO_ENQUEUE_FALSE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
+                100
+            )
+
+        })
+
+
+        it('action should reach saga', () => {
+            times(() => {
+                const action = generateAction(AUTO_ENQUEUE_FALSE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
+
             },
                 100
             )
@@ -116,20 +239,48 @@ describe('from first state', () => {
         it('should go to first state', () => {
 
             times(() => {
-                expect({
-                    offline: {
-                        autoEnqueue: false,
-                        queue: []
-                    }
-                }).toFirstStateFromAction(
-                    generateAction(RETRY_ALL)
-                )
+                expect(firstState)
+                    .toFirstStateFromAction(
+                        generateAction(RETRY_ALL)
+                    )
             },
                 100
             )
 
 
         })
+
+        it('action should reach reducer', () => {
+            times(() => {
+                const action = generateAction(RETRY_ALL)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+                const action = generateAction(RETRY_ALL)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
+
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(ENQUEUE_ACTION_NOT_IN_QUEUE, () => {
@@ -150,6 +301,37 @@ describe('from first state', () => {
                         incrementMetaCounter(action.payload)
                     )
                 },
+                100
+            )
+
+        })
+
+        it('action should reach reducer', () => {
+            times(() => {
+                const action = generateAction(ENQUEUE_ACTION_NOT_IN_QUEUE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+                const action = generateAction(ENQUEUE_ACTION_NOT_IN_QUEUE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
+
+            },
                 100
             )
 
@@ -181,6 +363,39 @@ describe('from first state', () => {
                 100
             )
         })
+
+        it('action should reach reducer', () => {
+            times(() => {
+                const action = generateAction(RETRY_ACTION_NOT_IN_QUEUE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
+                100
+            )
+
+        })
+
+
+        it('action should reach saga', () => {
+            times(() => {
+                const action = generateAction(RETRY_ACTION_NOT_IN_QUEUE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
+
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(RETRY_ACTION_IN_QUEUE, () => {
@@ -207,6 +422,38 @@ describe('from first state', () => {
             )
 
         })
+
+        it('action should reach reducer', () => {
+            times(() => {
+                const action = generateAction(REMOVE_ACTION_NOT_IN_QUEUE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+                const action = generateAction(REMOVE_ACTION_NOT_IN_QUEUE)
+                const pipeline = passThroughPipeline(firstState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
+
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(REMOVE_ACTION_IN_QUEUE, () => {

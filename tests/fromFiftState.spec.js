@@ -15,8 +15,9 @@ import {
     REMOVE_ACTION_IN_QUEUE,
     ACTION_IN_QUEUE,
     generateAction,
+    CONSUME_FIRST_FROM_QUEUE,
 } from "./utils/actions";
-import { actionsLeft, incrementMetaCounter } from "./utils/utils";
+import { actionsLeft, incrementMetaCounter, passThroughPipeline } from "./utils/utils";
 
 describe('from fift state', () => {
 
@@ -49,6 +50,38 @@ describe('from fift state', () => {
 
         })
 
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(ANY_NON_QUEUEABLE_ACTION, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                1
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(ANY_NON_QUEUEABLE_ACTION, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE, () => {
@@ -71,6 +104,39 @@ describe('from fift state', () => {
 
         })
 
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(2)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                    [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])],
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])],
+                ])
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(ANY_QUEUEABLE_ACTION_IN_QUEUE, () => {
@@ -79,7 +145,7 @@ describe('from fift state', () => {
 
             times(
                 () => {
-                    const action = generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, [actionInQueue1, actionInQueue2])
+                    const action = generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, originalQueue)
 
                     expect(fifthState)
                         .toFiftStateFromAction(
@@ -89,6 +155,39 @@ describe('from fift state', () => {
                             incrementMetaCounter(action)
                         )
                 },
+                100
+            )
+
+        })
+
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(2)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [generateAction(CONSUME_FIRST_FROM_QUEUE, [action])],
+                    [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])],
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])],
+                ])
+            },
                 100
             )
 
@@ -114,6 +213,38 @@ describe('from fift state', () => {
 
         })
 
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(AUTO_ENQUEUE_TRUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(AUTO_ENQUEUE_TRUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(AUTO_ENQUEUE_FALSE, () => {
@@ -134,6 +265,38 @@ describe('from fift state', () => {
 
         })
 
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(AUTO_ENQUEUE_FALSE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(AUTO_ENQUEUE_FALSE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(RETRY_ALL, () => {
@@ -143,10 +306,44 @@ describe('from fift state', () => {
             times(
                 () => {
                     expect(fifthState)
-                        .toFirstStateFromAction(
-                            generateAction(RETRY_ALL)
+                        .toFiftStateFromAction
+                        (
+                            generateAction(RETRY_ALL),
+                            ...originalQueue
                         )
                 },
+                100
+            )
+
+        })
+
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(RETRY_ALL, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(RETRY_ALL, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
                 100
             )
 
@@ -175,6 +372,38 @@ describe('from fift state', () => {
 
         })
 
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(ENQUEUE_ACTION_NOT_IN_QUEUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(ENQUEUE_ACTION_NOT_IN_QUEUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(ENQUEUE_ACTION_IN_QUEUE, () => {
@@ -193,6 +422,38 @@ describe('from fift state', () => {
                             incrementMetaCounter(action.payload)
                         )
                 },
+                100
+            )
+
+        })
+
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(ENQUEUE_ACTION_IN_QUEUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(ENQUEUE_ACTION_IN_QUEUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
                 100
             )
 
@@ -220,6 +481,38 @@ describe('from fift state', () => {
 
         })
 
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(RETRY_ACTION_NOT_IN_QUEUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                100
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(RETRY_ACTION_NOT_IN_QUEUE, originalQueue)
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(RETRY_ACTION_IN_QUEUE, () => {
@@ -231,19 +524,44 @@ describe('from fift state', () => {
 
                     const actionToRetry = generateAction(RETRY_ACTION_IN_QUEUE, originalQueue);
 
-                    const lefts = actionsLeft(
-                        originalQueue,
-                        actionToRetry
-                    )
-
-                    const expectedQueue = [...lefts, incrementMetaCounter(actionToRetry.payload)]
-
                     expect(fifthState)
                         .toFiftStateFromAction(
                             actionToRetry,
-                            ...expectedQueue
+                            ...originalQueue
                         )
                 },
+                100
+            )
+
+        })
+
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(RETRY_ACTION_IN_QUEUE, originalQueue);
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                1
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(RETRY_ACTION_IN_QUEUE, originalQueue);
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
                 100
             )
 
@@ -271,6 +589,38 @@ describe('from fift state', () => {
 
         })
 
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(REMOVE_ACTION_NOT_IN_QUEUE, originalQueue);
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                1
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(REMOVE_ACTION_NOT_IN_QUEUE, originalQueue);
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
+                100
+            )
+
+        })
+
     })
 
     describe(REMOVE_ACTION_IN_QUEUE, () => {
@@ -288,6 +638,38 @@ describe('from fift state', () => {
                             ...actionLefts
                         )
                 },
+                100
+            )
+
+        })
+
+        it('action should reach reducer', () => {
+            times(() => {
+
+                const action = generateAction(REMOVE_ACTION_IN_QUEUE, originalQueue);
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                    [action],
+                ])
+            },
+                1
+            )
+
+        })
+
+        it('action should reach saga', () => {
+            times(() => {
+
+                const action = generateAction(REMOVE_ACTION_IN_QUEUE, originalQueue);
+                const pipeline = passThroughPipeline(fifthState, action)
+
+                expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                    [action]
+                ])
+            },
                 100
             )
 

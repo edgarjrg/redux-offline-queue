@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
 import INITIAL_STATE from './initialState'
-import { QUEUE_ACTION, ONLINE, RESET_QUEUE, RETRY_ALL, RETRY, REMOVE } from './actions'
+import { QUEUE_ACTION, RETRY_ALL, RETRY, REMOVE } from './actions'
 import getConfig from './config'
 import { over } from 'ramda';
 import { metaPath } from '../tests/utils/utils';
@@ -28,13 +28,14 @@ import uuid from 'uuid/v1'
  */
 function fireQueuedActions(queue, dispatch) {
   queue.forEach((actionInQueue) => {
-    dispatch({
-      ...actionInQueue,
-      consume: true,
-      meta: {
-        queueIfOffline: false,
-      },
-    })
+
+    const actionToRemove = {
+      type: RETRY,
+      payload: { ...actionInQueue }
+    }
+
+    dispatch(actionToRemove)
+
   })
 }
 
@@ -88,13 +89,12 @@ export default function offlineMiddleware(userConfig = {}) {
 
     const { autoEnqueue } = state
 
-    if (action.type === RETRY_ALL || _.includes(additionalTriggers, action.type)) {
+    if (autoEnqueue && action.type === RETRY_ALL || _.includes(additionalTriggers, action.type)) {
       const result = next(action)
       const { queue } = _.get(getState(), stateName)
       const canFireQueue = !autoEnqueue || action.type === RETRY_ALL
       if (canFireQueue) {
         fireQueuedActions(queue, dispatch)
-        dispatch({ type: RESET_QUEUE })
       }
       return result
     }
@@ -131,31 +131,35 @@ function retry({ getState, dispatch, next, action, config }) {
 
   const state = _.get(getState(), stateName, INITIAL_STATE)
 
-  const { queue } = state
-
-  const actionToRetry = _.find(
-    queue,
-    actionInQueue => {
-      const idOfActionInQueue = _.get(actionInQueue, 'meta.queue.id')
-      const idOfActionToRetry = _.get(action, 'payload.meta.queue.id')
-
-      return (
-        idOfActionInQueue &&
-        idOfActionToRetry &&
-        (idOfActionInQueue === idOfActionToRetry)
-      )
-    }
-  )
-
+  const { queue, autoEnqueue } = state
   const nextResult = next(action)
-  if (actionToRetry) {
 
-    const actionToRemove = {
-      type: REMOVE,
-      payload: { ...actionToRetry }
+  if (autoEnqueue) {
+
+    const actionToRetry = _.find(
+      queue,
+      actionInQueue => {
+        const idOfActionInQueue = _.get(actionInQueue, 'meta.queue.id')
+        const idOfActionToRetry = _.get(action, 'payload.meta.queue.id')
+
+        return (
+          idOfActionInQueue &&
+          idOfActionToRetry &&
+          (idOfActionInQueue === idOfActionToRetry)
+        )
+      }
+    )
+
+    if (actionToRetry) {
+
+      const actionToRemove = {
+        type: REMOVE,
+        payload: { ...actionToRetry }
+      }
+      dispatch(actionToRemove)
+      dispatch(actionToRetry)
     }
-    dispatch(actionToRemove)
-    dispatch(actionToRetry)
+
   }
 
   return nextResult;
@@ -167,11 +171,15 @@ function isQueueable({ action }) {
 
 function queue({ getState, dispatch, next, action, config }) {
   // console.log(JSON.stringify(action))
+  const nextResult = next(action)
+
   const actionToQueue = {
     type: QUEUE_ACTION,
     payload: { ...action }
   }
 
   dispatch(actionToQueue)
+
+  return nextResult;
 
 }

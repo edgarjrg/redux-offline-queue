@@ -1,3 +1,7 @@
+import _ from "lodash";
+import getConfig from './config'
+import INITIAL_STATE from './initialState'
+
 /**
  * Custom wrapper for the saga middleware that can skip firing the saga.
  *
@@ -23,15 +27,28 @@
  * @param {Function} middleware Saga middleware.
  */
 export default function suspendSaga(middleware) {
-  return store => (next) => {
+  return store => (next) => (action) => {
     const delegate = middleware(store)(next)
 
-    return (action) => {
-      const { skipSaga } = action
-      if (skipSaga) {
-        return next(action)
-      }
+    if (
+      shouldSkipSaga(store, action)
+    ) {
+      return next(action)
+    } else {
       return delegate(action)
     }
   }
+}
+
+function shouldSkipSaga(store, action) {
+
+  const { stateName } = getConfig()
+
+  const state = _.get(store.getState(), stateName, INITIAL_STATE)
+
+  const { autoEnqueue } = state;
+  const should = _.get(action, 'meta.queue.enqueue', false) === true &&
+    !autoEnqueue
+
+  return should
 }
