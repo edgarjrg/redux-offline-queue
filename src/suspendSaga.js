@@ -13,7 +13,7 @@ import INITIAL_STATE from './initialState'
  *
  * For the action to skip the saga it should have:
  * ```
- * skipSaga: true
+ * suspendSaga: true
  * ```
  * property set.
  *
@@ -31,7 +31,7 @@ export default function suspendSaga(middleware) {
     const delegate = middleware(store)(next)
 
     if (
-      shouldSkipSaga(store, action)
+      shouldSuspendSaga(store, action)
     ) {
       return next(action)
     } else {
@@ -40,15 +40,15 @@ export default function suspendSaga(middleware) {
   }
 }
 
-function shouldSkipSaga(store, action) {
+function shouldSuspendSaga(store, action) {
 
   const { stateName } = getConfig()
 
   const state = _.get(store.getState(), stateName, INITIAL_STATE)
 
-  const { autoEnqueue } = state;
+  const { suspendSaga } = state;
   const should = _.get(action, 'meta.queue.enqueue', false) === true &&
-    !autoEnqueue
+    suspendSaga
 
   return should
 }

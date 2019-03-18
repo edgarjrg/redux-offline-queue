@@ -28,7 +28,7 @@ describe('from sixth state', () => {
     const originalQueue = [actionInQueue1, actionInQueue2]
     const sixthState = {
         offline: {
-            autoEnqueue: true,
+            suspendSaga: false,
             queue: originalQueue
         }
     }
@@ -201,14 +201,14 @@ describe('from sixth state', () => {
 
     describe(AUTO_ENQUEUE_TRUE, () => {
 
-        it('should go to sixth state', () => {
+        it('should go to fift state', () => {
 
             times(
                 () => {
                     const action = generateAction(AUTO_ENQUEUE_TRUE);
 
                     expect(sixthState)
-                        .toSixthStateFromAction(
+                        .toFiftStateFromAction(
                             action,
                             actionInQueue1,
                             actionInQueue2,
@@ -255,14 +255,14 @@ describe('from sixth state', () => {
 
     describe(AUTO_ENQUEUE_FALSE, () => {
 
-        it('should go to fift state', () => {
+        it('should go to sixth state', () => {
 
             times(
                 () => {
                     const action = generateAction(AUTO_ENQUEUE_FALSE);
 
                     expect(sixthState)
-                        .toFiftStateFromAction(
+                        .toSixthStateFromAction(
                             action,
                             actionInQueue1,
                             actionInQueue2,

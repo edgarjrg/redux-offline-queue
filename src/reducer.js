@@ -23,7 +23,7 @@ import { metaPath } from '../tests/utils/utils';
 export default function reducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case AUTO_ENQUEUE: {
-      return { ...state, autoEnqueue: action.payload.value }
+      return { ...state, suspendSaga: action.payload.value }
     }
     case REHYDRATE: { // Handle rehydrating with custom shallow merge.
 
@@ -35,10 +35,10 @@ export default function reducer(state = INITIAL_STATE, action = {}) {
     }
     case QUEUE_ACTION:
       return { ...state, queue: state.queue.concat(enhace(action.payload)) }
-    case ONLINE:
-      return { ...state, autoEnqueue: false }
-    case OFFLINE:
-      return { ...state, autoEnqueue: true }
+    // case ONLINE:
+    //   return { ...state, suspendSaga: false }
+    // case OFFLINE:
+    //   return { ...state, autoEnqueue: true }
     case REMOVE:
       return removeFromQueue(state, action)
     case RETRY:

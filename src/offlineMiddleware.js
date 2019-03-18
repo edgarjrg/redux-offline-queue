@@ -55,7 +55,7 @@ function fireQueuedActions(queue, dispatch) {
  * When the device is offline this action will be placed in an offline queue.
  * Those actions are later dispatched again when the device comes online.
  * Note that this action is still dispatched to make the optimistic updates possible.
- * However it wil have `skipSaga: true` property set
+ * However it wil have `suspendSaga: true` property set
  * for the `suspendSaga` wrapper to skip the corresponding saga.
  *
  * Note that this queue is not persisted by itself.
@@ -96,9 +96,9 @@ function isRetryAll({ getState, dispatch, next, action, config }) {
 
   const state = _.get(getState(), stateName, INITIAL_STATE)
 
-  const { autoEnqueue } = state
+  const { suspendSaga } = state
 
-  return autoEnqueue && action.type === RETRY_ALL || _.includes(additionalTriggers, action.type)
+  return !suspendSaga && action.type === RETRY_ALL || _.includes(additionalTriggers, action.type)
 }
 
 function retryAll({ getState, dispatch, next, action, config }) {
@@ -124,10 +124,10 @@ function retry({ getState, dispatch, next, action, config }) {
 
   const state = _.get(getState(), stateName, INITIAL_STATE)
 
-  const { queue, autoEnqueue } = state
+  const { queue, suspendSaga } = state
   const nextResult = next(action)
 
-  if (autoEnqueue) {
+  if (!suspendSaga) {
 
     const actionToRetry = _.find(
       queue,

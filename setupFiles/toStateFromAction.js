@@ -12,7 +12,7 @@ expect.extend({
 
         const expected = {
             offline: {
-                autoEnqueue: false,
+                suspendSaga: true,
                 queue: []
             }
         }
@@ -33,7 +33,7 @@ expect.extend({
 
         const expected = {
             offline: {
-                autoEnqueue: false,
+                suspendSaga: true,
                 queue: [actionInQueue]
             }
         }
@@ -63,7 +63,7 @@ expect.extend({
 
         const expected = {
             offline: {
-                autoEnqueue: false,
+                suspendSaga: true,
                 queue: [actionInQueueToCompare]
             }
         }
@@ -86,7 +86,7 @@ expect.extend({
 
         const expected = {
             offline: {
-                autoEnqueue: true,
+                suspendSaga: false,
                 queue: []
             }
         }
@@ -107,7 +107,7 @@ expect.extend({
 
         const expected = {
             offline: {
-                autoEnqueue: true,
+                suspendSaga: false,
                 queue: [actionInQueue]
             }
         }
@@ -135,7 +135,7 @@ expect.extend({
 
         const expected = {
             offline: {
-                autoEnqueue: true,
+                suspendSaga: false,
                 queue: [actionInQueueToCompare]
             }
         }
@@ -157,7 +157,7 @@ expect.extend({
 
         const expected = {
             offline: {
-                autoEnqueue: false,
+                suspendSaga: true,
                 queue: queue
             }
         }
@@ -183,7 +183,7 @@ expect.extend({
 
         const expected = {
             offline: {
-                autoEnqueue: false,
+                suspendSaga: true,
                 queue: omitLastQueuedActionsId(queue)
             }
         }
@@ -210,7 +210,7 @@ expect.extend({
 
         const expected = {
             offline: {
-                autoEnqueue: true,
+                suspendSaga: false,
                 queue: queue
             }
         }
@@ -236,7 +236,7 @@ expect.extend({
 
         const expected = {
             offline: {
-                autoEnqueue: true,
+                suspendSaga: false,
                 queue: queue
             }
         }

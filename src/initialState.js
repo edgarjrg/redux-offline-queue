@@ -6,5 +6,5 @@
  */
 export default {
   queue: [],
-  autoEnqueue: false,
+  suspendSaga: true,
 }

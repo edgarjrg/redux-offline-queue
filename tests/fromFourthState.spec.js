@@ -27,7 +27,7 @@ describe('from fourth state', () => {
 
     const fourthState = {
         offline: {
-            autoEnqueue: true,
+            suspendSaga: false,
             queue: originalQueue
         }
     }
@@ -197,14 +197,14 @@ describe('from fourth state', () => {
 
     describe(AUTO_ENQUEUE_TRUE, () => {
 
-        it('should go to fourth state', () => {
+        it('should go to second state', () => {
 
             const secondAction = generateAction(AUTO_ENQUEUE_TRUE)
 
             times(
                 () => {
                     expect(fourthState)
-                        .toFourthStateFromAction(
+                        .toSecondStateFromAction(
                             secondAction,
                             actionInQueue,
                         )
@@ -250,14 +250,14 @@ describe('from fourth state', () => {
 
     describe(AUTO_ENQUEUE_FALSE, () => {
 
-        it('should go to second state', () => {
+        it('should go to fourth state', () => {
 
             const action = generateAction(AUTO_ENQUEUE_FALSE)
 
             times(
                 () => {
                     expect(fourthState)
-                        .toSecondStateFromAction(
+                        .toFourthStateFromAction(
                             action,
                             actionInQueue,
                         )

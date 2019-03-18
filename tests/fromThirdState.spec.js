@@ -21,7 +21,7 @@ describe('from third state', () => {
 
     const thirdState = {
         offline: {
-            autoEnqueue: true,
+            suspendSaga: false,
             queue: []
         }
     }
@@ -138,13 +138,13 @@ describe('from third state', () => {
 
     describe(AUTO_ENQUEUE_TRUE, () => {
 
-        it('should go to third state', () => {
+        it('should go to first state', () => {
 
             times(
                 () => {
 
                     expect(thirdState)
-                        .toThirdStateFromAction(
+                        .toFirstStateFromAction(
                             generateAction(AUTO_ENQUEUE_TRUE),
                         )
                 },
@@ -188,13 +188,13 @@ describe('from third state', () => {
 
     describe(AUTO_ENQUEUE_FALSE, () => {
 
-        it('should go to first state', () => {
+        it('should go to third state', () => {
 
             times(
                 () => {
 
                     expect(thirdState)
-                        .toFirstStateFromAction(
+                        .toThirdStateFromAction(
                             generateAction(AUTO_ENQUEUE_FALSE),
                         )
                 },

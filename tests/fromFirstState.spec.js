@@ -22,7 +22,7 @@ import { incrementMetaCounter, passThroughPipeline } from "./utils/utils";
 describe('from first state', () => {
     const firstState = {
         offline: {
-            autoEnqueue: false,
+            suspendSaga: true,
             queue: []
         }
     }
@@ -81,15 +81,11 @@ describe('from first state', () => {
             const action = generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE)
 
             times(() => {
-                expect({
-                    offline: {
-                        autoEnqueue: false,
-                        queue: []
-                    }
-                }).toSecondStateFromCreationAction(
-                    action,
-                    incrementMetaCounter(action)
-                )
+                expect(firstState)
+                    .toSecondStateFromCreationAction(
+                        action,
+                        incrementMetaCounter(action)
+                    )
             },
                 100
             )
@@ -136,17 +132,13 @@ describe('from first state', () => {
 
     describe(AUTO_ENQUEUE_TRUE, () => {
 
-        it('should go to third state', () => {
+        it('should go to first state', () => {
 
             times(() => {
-                expect({
-                    offline: {
-                        autoEnqueue: false,
-                        queue: []
-                    }
-                }).toThirdStateFromAction(
-                    generateAction(AUTO_ENQUEUE_TRUE)
-                )
+                expect(firstState)
+                    .toFirstStateFromAction(
+                        generateAction(AUTO_ENQUEUE_TRUE)
+                    )
             },
                 100
             )
@@ -188,11 +180,11 @@ describe('from first state', () => {
 
     describe(AUTO_ENQUEUE_FALSE, () => {
 
-        it('should go to first state', () => {
+        it('should go to third state', () => {
 
             times(() => {
                 expect(firstState)
-                    .toFirstStateFromAction(
+                    .toThirdStateFromAction(
                         generateAction(AUTO_ENQUEUE_FALSE)
                     )
             },
@@ -291,15 +283,11 @@ describe('from first state', () => {
                 () => {
                     const action = generateAction(ENQUEUE_ACTION_NOT_IN_QUEUE);
 
-                    expect({
-                        offline: {
-                            autoEnqueue: false,
-                            queue: []
-                        }
-                    }).toSecondStateFromCreationAction(
-                        action,
-                        incrementMetaCounter(action.payload)
-                    )
+                    expect(firstState)
+                        .toSecondStateFromCreationAction(
+                            action,
+                            incrementMetaCounter(action.payload)
+                        )
                 },
                 100
             )
@@ -351,14 +339,10 @@ describe('from first state', () => {
 
             times(
                 () => {
-                    expect({
-                        offline: {
-                            autoEnqueue: false,
-                            queue: []
-                        }
-                    }).toFirstStateFromAction(
-                        generateAction(RETRY_ACTION_NOT_IN_QUEUE)
-                    )
+                    expect(firstState)
+                        .toFirstStateFromAction(
+                            generateAction(RETRY_ACTION_NOT_IN_QUEUE)
+                        )
                 },
                 100
             )
@@ -409,14 +393,10 @@ describe('from first state', () => {
         it('should go to first state', () => {
             times(
                 () => {
-                    expect({
-                        offline: {
-                            autoEnqueue: false,
-                            queue: []
-                        }
-                    }).toFirstStateFromAction(
-                        generateAction(REMOVE_ACTION_NOT_IN_QUEUE)
-                    )
+                    expect(firstState)
+                        .toFirstStateFromAction(
+                            generateAction(REMOVE_ACTION_NOT_IN_QUEUE)
+                        )
                 },
                 100
             )
