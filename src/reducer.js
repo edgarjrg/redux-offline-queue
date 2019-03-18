@@ -5,14 +5,13 @@ import { get, filter } from "lodash";
 import INITIAL_STATE from './initialState'
 import {
   QUEUE_ACTION,
-  ONLINE,
-  OFFLINE,
   AUTO_ENQUEUE,
   REMOVE,
   RETRY
 } from './actions'
 import { over } from 'ramda';
 import { metaPath } from '../tests/utils/utils';
+import moment from 'moment'
 
 /**
  * Reducer for the offline queue.
@@ -35,10 +34,6 @@ export default function reducer(state = INITIAL_STATE, action = {}) {
     }
     case QUEUE_ACTION:
       return { ...state, queue: state.queue.concat(enhace(action.payload)) }
-    // case ONLINE:
-    //   return { ...state, suspendSaga: false }
-    // case OFFLINE:
-    //   return { ...state, autoEnqueue: true }
     case REMOVE:
       return removeFromQueue(state, action)
     case RETRY:
@@ -66,7 +61,9 @@ function enhace(action) {
     meta => ({
       ...meta,
       times: (meta.times || 0) + 1,
-      id: meta.id || uuid()
+      id: meta.id || uuid(),
+      ttl: meta.ttl || moment().toISOString(),
+      throttle: moment().add(1, 'minute').toISOString(),
     }),
     action
   )
