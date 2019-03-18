@@ -17,7 +17,7 @@ import {
 } from "./utils/actions";
 import { incrementMetaCounter, passThroughPipeline } from "./utils/utils";
 
-describe('from third state', () => {
+describe.skip('from third state', () => {
 
     const thirdState = {
         offline: {

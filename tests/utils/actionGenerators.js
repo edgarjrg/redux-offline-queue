@@ -8,6 +8,7 @@ import {
 } from "../../src/actions";
 import faker from 'faker';
 import uuid from 'uuid/v1'
+import { splitThrottled, splitAlive } from "./utils";
 
 export function generateQueueableAction() {
     return {
@@ -31,7 +32,14 @@ export function generateNonQueueableAction(queue) {
 }
 
 
-export function generateQueueableActionInQueue(queue) {
+export function selectQueueableActionInQueue(queue) {
+    const [throttled, retry] = splitThrottled(queue)
+    const [alive, dead] = splitAlive(retry)
+
+    return faker.random.arrayElement(alive)
+
+}
+export function selectActionInQueue(queue) {
 
     return faker.random.arrayElement(queue)
 
@@ -84,7 +92,7 @@ export function generateEnqueueActionActionNotInQueue(queue) {
 export function generateEnqueueActionActionInQueue(queue) {
     return {
         type: QUEUE_ACTION,
-        payload: generateQueueableActionInQueue(queue)
+        payload: selectActionInQueue(queue)
     }
 }
 
@@ -99,7 +107,7 @@ export function generateRetryActionActionInQueue(queue) {
 
     return {
         type: RETRY,
-        payload: generateQueueableActionInQueue(queue)
+        payload: selectActionInQueue(queue)
     }
 
 }
@@ -117,7 +125,7 @@ export function generateRemoveActionActionInQueue(queue) {
 
     return {
         type: REMOVE,
-        payload: generateQueueableActionInQueue(queue)
+        payload: selectActionInQueue(queue)
     }
 
 }

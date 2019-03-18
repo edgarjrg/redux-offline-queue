@@ -20,7 +20,7 @@ import {
 
 import { actionsLeft, incrementMetaCounter, passThroughPipeline } from "./utils/utils";
 
-describe('from sixth state', () => {
+describe.skip('from sixth state', () => {
 
     const actionInQueue1 = generateAction(ACTION_IN_QUEUE)
     const actionInQueue2 = generateAction(ACTION_IN_QUEUE)

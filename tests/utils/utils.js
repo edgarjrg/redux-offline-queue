@@ -1,5 +1,19 @@
-import { lensPath, over, omit, map, view, reduce, all, lensIndex, filter, pipe } from "ramda";
+import {
+    lensPath,
+    over,
+    omit,
+    map,
+    view,
+    all,
+    lensIndex,
+    filter,
+    range,
+    partition,
+} from "ramda";
 import { wholePipeline } from "./tearup";
+import moment from 'moment'
+import faker from 'faker'
+import uuid from 'uuid/v1'
 
 export function actionsLeft(queue, actionToFind) {
     return filter(
@@ -77,4 +91,76 @@ export function passThroughPipeline(preloadedState, action) {
 
     return pipeline
 
+}
+
+
+export function isThrottled(action) {
+    const time = view(lensPath(['meta', 'queue', 'throttle']), action)
+    return moment(time).isSameOrAfter()
+}
+
+export function isAlive(action) {
+    const time = view(lensPath(['meta', 'queue', 'ttl']), action)
+    return moment(time).isSameOrAfter()
+}
+
+export function splitThrottled(queue) {
+    return partition(
+        isThrottled,
+        queue
+    )
+}
+
+export function splitAlive(queue) {
+    return partition(
+        isAlive,
+        queue
+    )
+}
+
+export function generateAnyNotSuspendSagaState() {
+    return {
+        offline: {
+            suspendSaga: false,
+            queue: generateAnyQueue()
+        }
+    }
+}
+
+export function generateAnyQueue() {
+    return map(
+        x => generateRandomPossibleElementInQueue()
+        ,
+        range(0, faker.random.number(100))
+    )
+}
+
+export function generateRandomPossibleElementInQueue() {
+    return {
+        type: faker.random.word(),
+        meta: {
+            queue: {
+                enqueue: true,
+                id: uuid(),
+                times: 10,
+                ttl: generateRandomTime(),
+                throttle: generateRandomTime()
+            }
+        }
+    }
+}
+
+export function generateRandomTime() {
+    const now = moment()
+
+    return faker.random.arrayElement([now.clone().subtract(1, 'day').toISOString(), now.clone().add(1, 'day').toISOString()])
+}
+
+export function generateAnySuspendSagaState() {
+    return {
+        offline: {
+            suspendSaga: true,
+            queue: generateAnyQueue()
+        }
+    }
 }

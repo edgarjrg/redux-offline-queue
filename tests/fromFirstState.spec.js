@@ -19,7 +19,7 @@ import {
 
 import { incrementMetaCounter, passThroughPipeline } from "./utils/utils";
 
-describe('from first state', () => {
+describe.skip('from first state', () => {
     const firstState = {
         offline: {
             suspendSaga: true,

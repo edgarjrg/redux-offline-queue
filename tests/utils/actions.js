@@ -2,7 +2,7 @@ import {
     generateNonQueueableAction,
     generateQueueableAction,
     generateQueueableActionNotInQueue,
-    generateQueueableActionInQueue,
+    selectQueueableActionInQueue,
     generateAutoEnqueueActionTrue,
     generateAutoEnqueueActionFalse,
     generateRetryAllAction,
@@ -54,7 +54,7 @@ export function generateAction(type, queue) {
         case ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE:
             return generateQueueableActionNotInQueue(queue);
         case ANY_QUEUEABLE_ACTION_IN_QUEUE:
-            return generateQueueableActionInQueue(queue);
+            return selectQueueableActionInQueue(queue);
         case AUTO_ENQUEUE_TRUE:
             return generateAutoEnqueueActionTrue(queue);
         case AUTO_ENQUEUE_FALSE:

@@ -16,9 +16,9 @@ import {
     ACTION_IN_QUEUE,
     generateAction,
     CONSUME_FIRST_FROM_QUEUE,
-} from "./utils/actions";
+} from "../../utils/actions";
 
-import { actionsLeft, incrementMetaCounter, passThroughPipeline } from "./utils/utils";
+import { actionsLeft, incrementMetaCounter, passThroughPipeline, isAlive } from "../../utils/utils";
 import faker from 'faker'
 import uuid from 'uuid/v1'
 import moment from 'moment'
@@ -206,9 +206,9 @@ describe('from sixth state', () => {
                 () => {
                     const state = generateAnySuspendSagaState()
                     const queue = view(lensPath(['offline', 'queue']), state)
+                    const action = generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, queue)
 
-                    if (queue.length > 0) {
-                        const action = generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, queue)
+                    if (queue.length > 0 && action) {
                         const pipeline = passThroughPipeline(state, action)
                         const resultState = pipeline.store.getState()
 
@@ -249,15 +249,22 @@ describe('from sixth state', () => {
                 const state = generateAnySuspendSagaState()
                 const queue = view(lensPath(['offline', 'queue']), state)
 
-                if (queue.length > 0) {
-                    const action = generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, queue)
+                const action = generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, queue)
+                if (queue.length > 0 && action) {
                     const pipeline = passThroughPipeline(state, action)
 
-                    expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(2)
-                    expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
-                        [generateAction(CONSUME_FIRST_FROM_QUEUE, [action])],
-                        [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])],
-                    ])
+                    if (isAlive(action)) {
+                        expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(2)
+                        expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                            [generateAction(CONSUME_FIRST_FROM_QUEUE, [action])],
+                            [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])],
+                        ])
+                    } else {
+                        expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
+                        expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
+                            [generateAction(CONSUME_FIRST_FROM_QUEUE, [action])],
+                        ])
+                    }
                 } else {
                     // impossible state if no actions are queued
                 }
@@ -272,15 +279,25 @@ describe('from sixth state', () => {
             times(() => {
                 const state = generateAnySuspendSagaState()
                 const queue = view(lensPath(['offline', 'queue']), state)
+                const action = generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, queue)
 
-                if (queue.length > 0) {
-                    const action = generateAction(ANY_QUEUEABLE_ACTION_IN_QUEUE, queue)
+                if (queue.length > 0 && action) {
                     const pipeline = passThroughPipeline(state, action)
 
-                    expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
-                    expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
-                        [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])],
-                    ])
+                    if (isAlive(action)) {
+
+                        expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
+                        expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                            [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])],
+                        ])
+
+                    } else {
+
+                        expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(0)
+                        expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
+                        ])
+
+                    }
                 } else {
                     // impossible state if no actions are queued
                 }

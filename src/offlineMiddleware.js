@@ -3,9 +3,10 @@ import _ from 'lodash'
 import INITIAL_STATE from './initialState'
 import { QUEUE_ACTION, RETRY_ALL, RETRY, REMOVE } from './actions'
 import getConfig from './config'
-import { over } from 'ramda';
+import { over, view, lensPath } from 'ramda';
 import { metaPath } from '../tests/utils/utils';
 import uuid from 'uuid/v1'
+import moment from 'moment'
 
 /**
  * Helper method to dispatch the queued action again when the connection is available.
@@ -27,14 +28,23 @@ import uuid from 'uuid/v1'
  * @param {Function} dispatch Redux's dispatch function.
  */
 function fireQueuedActions(queue, dispatch) {
+
+  function shouldRetryQueuedAction(action) {
+    const time = moment(action.meta.queue.throttle)
+    return time.isBefore(moment())
+  }
+
   queue.forEach((actionInQueue) => {
 
-    const actionToRemove = {
-      type: RETRY,
-      payload: { ...actionInQueue }
-    }
+    if (shouldRetryQueuedAction(actionInQueue)) {
 
-    dispatch(actionToRemove)
+      const actionToRemove = {
+        type: RETRY,
+        payload: { ...actionInQueue }
+      }
+
+      dispatch(actionToRemove)
+    }
 
   })
 }
@@ -159,7 +169,13 @@ function retry({ getState, dispatch, next, action, config }) {
 }
 
 function isQueueable({ action }) {
-  return _.get(action, ['meta', 'queue', 'enqueue'], false)
+
+  const isInScope = _.get(action, ['meta', 'queue', 'enqueue'], false);
+  const ttl = view(lensPath(['meta', 'queue', 'ttl']), action)
+
+  const isAlive = ttl ? moment(ttl).isSameOrAfter() : true
+
+  return isInScope && isAlive;
 }
 
 function queue({ getState, dispatch, next, action, config }) {
