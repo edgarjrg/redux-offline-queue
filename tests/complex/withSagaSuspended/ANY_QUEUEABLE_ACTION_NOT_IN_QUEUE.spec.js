@@ -1,15 +1,11 @@
 import {
     times,
-    range,
-    map,
     last,
     over,
     lensPath,
     init,
     view,
     pipe,
-    omit,
-    set
 } from "ramda";
 
 import {
@@ -30,9 +26,12 @@ import {
     CONSUME_FIRST_FROM_QUEUE,
 } from "../../utils/actions";
 
-import { actionsLeft, incrementMetaCounter, passThroughPipeline, isAlive, generateAnySuspendSagaState } from "../../utils/utils";
-import faker from 'faker'
-import uuid from 'uuid/v1'
+import {
+    passThroughPipeline,
+    generateAnySuspendSagaState,
+    decrementMetaCounter,
+    fromLastElementInQueueToFirstTimeEnhaced
+} from "../../utils/utils";
 import moment from 'moment'
 
 describe('from sixth state', () => {
@@ -82,13 +81,18 @@ describe('from sixth state', () => {
 
                 const state = generateAnySuspendSagaState()
                 const action = generateAction(ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE)
-
                 const pipeline = passThroughPipeline(state, action)
+                const resultState = pipeline.store.getState()
+
+                const lastElementInResult = pipe(
+                    view(lensPath(['offline', 'queue'])),
+                    last
+                )(resultState)
 
                 expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(2)
                 expect(pipeline.gotToReducerSpy.mock.calls).toEqual([
-                    [action],
-                    [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])],
+                    [fromLastElementInQueueToFirstTimeEnhaced(lastElementInResult)],
+                    [generateAction(ENQUEUE_ACTION_IN_QUEUE, [fromLastElementInQueueToFirstTimeEnhaced(lastElementInResult)])],
                 ])
             },
                 100
@@ -103,9 +107,16 @@ describe('from sixth state', () => {
 
                 const pipeline = passThroughPipeline(state, action)
 
+                const resultState = pipeline.store.getState()
+
+                const lastElementInResult = pipe(
+                    view(lensPath(['offline', 'queue'])),
+                    last
+                )(resultState)
+
                 expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
                 expect(pipeline.sagaMiddlewareSpy.mock.calls).toEqual([
-                    [generateAction(ENQUEUE_ACTION_IN_QUEUE, [action])],
+                    [generateAction(ENQUEUE_ACTION_IN_QUEUE, [fromLastElementInQueueToFirstTimeEnhaced(lastElementInResult)])],
                 ])
             },
                 100

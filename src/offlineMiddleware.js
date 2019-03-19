@@ -7,6 +7,7 @@ import { over, view, lensPath } from 'ramda';
 import { metaPath } from '../tests/utils/utils';
 import uuid from 'uuid/v1'
 import moment from 'moment'
+import { enhaceInitial } from './sharedAlgorithms/enhanceAction';
 
 /**
  * Helper method to dispatch the queued action again when the connection is available.
@@ -179,16 +180,26 @@ function isQueueable({ action }) {
 }
 
 function queue({ getState, dispatch, next, action, config }) {
-  // console.log(JSON.stringify(action))
-  const nextResult = next(action)
+
+  let enhacedAction = action
+
+  if (isFirstTime(action)) {
+    enhacedAction = enhaceInitial(action)
+  }
+
+  const nextResult = next(enhacedAction)
 
   const actionToQueue = {
     type: QUEUE_ACTION,
-    payload: { ...action }
+    payload: { ...enhacedAction }
   }
 
   dispatch(actionToQueue)
 
   return nextResult;
 
+}
+
+function isFirstTime(action) {
+  return view(lensPath(['meta', 'queue', 'times']), action) === undefined
 }

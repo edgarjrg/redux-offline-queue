@@ -69,6 +69,17 @@ export function incrementMetaCounter(action) {
     )
 }
 
+export function decrementMetaCounter(action) {
+    return over(
+        metaPath,
+        meta => ({
+            ...meta,
+            times: (meta.times || 0) - 1
+        }),
+        action
+    )
+}
+
 export const omitLastQueuedActionsIdFromState = state => over(
     lensPath(['offline', 'queue']),
     omitLastQueuedActionsId,
@@ -163,4 +174,16 @@ export function generateAnySuspendSagaState() {
             queue: generateAnyQueue()
         }
     }
+}
+
+export function fromLastElementInQueueToFirstTimeEnhaced(action) {
+    return decrementMetaCounter(omitInActionMeta(action, ['throttle', 'ttl']))
+}
+
+export function omitInActionMeta(action, omits) {
+    return over(
+        lensPath(['meta', 'queue']),
+        omit(omits),
+        action
+    )
 }

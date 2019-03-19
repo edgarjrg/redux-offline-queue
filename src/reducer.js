@@ -12,6 +12,7 @@ import {
 import { over } from 'ramda';
 import { metaPath } from '../tests/utils/utils';
 import moment from 'moment'
+import { enhace } from './sharedAlgorithms/enhanceAction';
 
 /**
  * Reducer for the offline queue.
@@ -52,20 +53,4 @@ function removeFromQueue(state, action) {
       return removeId !== actionId
     })
   }
-}
-
-function enhace(action) {
-
-  return over(
-    metaPath,
-    meta => ({
-      ...meta,
-      times: (meta.times || 0) + 1,
-      id: meta.id || uuid(),
-      ttl: meta.ttl || moment().toISOString(),
-      throttle: moment().add(1, 'minute').toISOString(),
-    }),
-    action
-  )
-
 }

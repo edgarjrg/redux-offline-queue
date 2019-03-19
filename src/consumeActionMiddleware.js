@@ -19,7 +19,7 @@ import { CONSUME } from "./actions";
  */
 export default function consumeActionMiddleware() {
   return store => next => (action) => {
-    const shouldConsumeAction = _.get(action, 'meta.queue.id', false)
+    const shouldConsumeAction = _.get(action, 'meta.queue.times', 0) > 0
 
     if (shouldConsumeAction) {
       return next({ type: CONSUME, payload: { ...action } })
