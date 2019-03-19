@@ -11,7 +11,7 @@ export function enhace(action) {
             ...meta,
             id: meta.id || uuid(),
             times: (meta.times || 0) + 1,
-            ttl: meta.ttl || moment().toISOString(),
+            ttl: meta.ttl || moment().add(1, 'day').toISOString(),
             throttle: moment().add(1, 'minute').toISOString(),
         }),
         action
