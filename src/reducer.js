@@ -1,5 +1,4 @@
 import { REHYDRATE } from 'redux-persist'
-import uuid from 'uuid/v1'
 import { get, filter } from "lodash";
 
 import INITIAL_STATE from './initialState'
@@ -9,9 +8,6 @@ import {
   REMOVE,
   RETRY
 } from './actions'
-import { over } from 'ramda';
-import { metaPath } from '../tests/utils/utils';
-import moment from 'moment'
 import { enhace } from './sharedAlgorithms/enhanceAction';
 
 /**

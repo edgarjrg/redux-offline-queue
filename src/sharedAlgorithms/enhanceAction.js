@@ -1,13 +1,12 @@
 
 import uuid from 'uuid/v1'
-import { over } from 'ramda';
+import { over, lensPath } from 'ramda';
 import moment from 'moment'
-import { metaPath } from '../../tests/utils/utils';
 
 export function enhace(action) {
 
     return over(
-        metaPath,
+        lensPath(['meta', 'queue']),
         meta => ({
             ...meta,
             id: meta.id || uuid(),
@@ -23,7 +22,7 @@ export function enhace(action) {
 export function enhaceInitial(action) {
 
     return over(
-        metaPath,
+        lensPath(['meta', 'queue']),
         meta => ({
             ...meta,
             id: meta.id || uuid(),

@@ -1,11 +1,14 @@
 import _ from 'lodash'
 
 import INITIAL_STATE from './initialState'
-import { QUEUE_ACTION, RETRY_ALL, RETRY, REMOVE } from './actions'
+import {
+  QUEUE_ACTION,
+  RETRY_ALL,
+  RETRY,
+  REMOVE
+} from './actions'
 import getConfig from './config'
-import { over, view, lensPath } from 'ramda';
-import { metaPath } from '../tests/utils/utils';
-import uuid from 'uuid/v1'
+import { view, lensPath } from 'ramda';
 import moment from 'moment'
 import { enhaceInitial } from './sharedAlgorithms/enhanceAction';
 

@@ -1,4 +1,11 @@
-import * as actions from './actions'
+import {
+  AUTO_ENQUEUE,
+  CONSUME,
+  QUEUE_ACTION,
+  REMOVE,
+  RETRY,
+  RETRY_ALL
+} from './actions'
 import offlineMiddleware from './offlineMiddleware'
 import { createOfflineActions, markActionsOffline } from './offlineActions'
 import reducer from './reducer'
@@ -7,8 +14,12 @@ import consumeActionMiddleware from './consumeActionMiddleware'
 import offlinePersistenceTransform from './offlinePersistenceTransform'
 
 module.exports = {
-  ONLINE: actions.ONLINE,
-  OFFLINE: actions.OFFLINE,
+  AUTO_ENQUEUE,
+  CONSUME,
+  QUEUE_ACTION,
+  REMOVE,
+  RETRY,
+  RETRY_ALL,
   createOfflineActions,
   offlineMiddleware,
   markActionsOffline,
