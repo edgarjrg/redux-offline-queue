@@ -19,8 +19,8 @@ import {
 export const ANY_NON_QUEUEABLE_ACTION = 'ANY_NON_QUEUEABLE_ACTION';
 export const ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE = 'ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE'
 export const ANY_QUEUEABLE_ACTION_IN_QUEUE = 'ANY_QUEUEABLE_ACTION_IN_QUEUE'
-export const AUTO_ENQUEUE_TRUE = 'AUTO_ENQUEUE_TRUE'
-export const AUTO_ENQUEUE_FALSE = 'AUTO_ENQUEUE_FALSE'
+export const SUSPEND_SAGA_TRUE = 'SUSPEND_SAGA_TRUE'
+export const SUSPEND_SAGA_FALSE = 'SUSPEND_SAGA_FALSE'
 export const RETRY_ALL = 'RETRY_ALL'
 export const ENQUEUE_ACTION_NOT_IN_QUEUE = 'ENQUEUE_ACTION_NOT_IN_QUEUE'
 export const ENQUEUE_ACTION_IN_QUEUE = 'ENQUEUE_ACTION_IN_QUEUE'
@@ -35,8 +35,8 @@ export const actions = [
     ANY_NON_QUEUEABLE_ACTION,
     ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE,
     ANY_QUEUEABLE_ACTION_IN_QUEUE,
-    AUTO_ENQUEUE_TRUE,
-    AUTO_ENQUEUE_FALSE,
+    SUSPEND_SAGA_TRUE,
+    SUSPEND_SAGA_FALSE,
     RETRY_ALL,
     ENQUEUE_ACTION_NOT_IN_QUEUE,
     ENQUEUE_ACTION_IN_QUEUE,
@@ -55,9 +55,9 @@ export function generateAction(type, queue) {
             return generateQueueableActionNotInQueue(queue);
         case ANY_QUEUEABLE_ACTION_IN_QUEUE:
             return selectQueueableActionInQueue(queue);
-        case AUTO_ENQUEUE_TRUE:
+        case SUSPEND_SAGA_TRUE:
             return generateAutoEnqueueActionTrue(queue);
-        case AUTO_ENQUEUE_FALSE:
+        case SUSPEND_SAGA_FALSE:
             return generateAutoEnqueueActionFalse(queue);
         case RETRY_ALL:
             return generateRetryAllAction(queue);

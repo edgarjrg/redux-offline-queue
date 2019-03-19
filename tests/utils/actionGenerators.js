@@ -1,5 +1,5 @@
 import {
-    AUTO_ENQUEUE,
+    SUSPEND_SAGA,
     RETRY_ALL,
     RETRY,
     QUEUE_ACTION,
@@ -58,7 +58,7 @@ export function generateQueueableActionNotInQueue(queue) {
 
 export function generateAutoEnqueueActionTrue(queue) {
     return {
-        type: AUTO_ENQUEUE,
+        type: SUSPEND_SAGA,
         payload: {
             value: true
         }
@@ -67,7 +67,7 @@ export function generateAutoEnqueueActionTrue(queue) {
 
 export function generateAutoEnqueueActionFalse(queue) {
     return {
-        type: AUTO_ENQUEUE,
+        type: SUSPEND_SAGA,
         payload: {
             value: false
         }

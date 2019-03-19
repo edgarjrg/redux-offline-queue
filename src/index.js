@@ -1,5 +1,5 @@
 import {
-  AUTO_ENQUEUE,
+  SUSPEND_SAGA,
   CONSUME,
   QUEUE_ACTION,
   REMOVE,
@@ -14,7 +14,7 @@ import consumeActionMiddleware from './consumeActionMiddleware'
 import offlinePersistenceTransform from './offlinePersistenceTransform'
 
 module.exports = {
-  AUTO_ENQUEUE,
+  SUSPEND_SAGA,
   CONSUME,
   QUEUE_ACTION,
   REMOVE,

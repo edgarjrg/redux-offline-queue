@@ -4,7 +4,7 @@ import { get, filter } from "lodash";
 import INITIAL_STATE from './initialState'
 import {
   QUEUE_ACTION,
-  AUTO_ENQUEUE,
+  SUSPEND_SAGA,
   REMOVE,
   RETRY
 } from './actions'
@@ -18,7 +18,7 @@ import { enhace } from './sharedAlgorithms/enhanceAction';
  */
 export default function reducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
-    case AUTO_ENQUEUE: {
+    case SUSPEND_SAGA: {
       return { ...state, suspendSaga: action.payload.value }
     }
     case REHYDRATE: { // Handle rehydrating with custom shallow merge.

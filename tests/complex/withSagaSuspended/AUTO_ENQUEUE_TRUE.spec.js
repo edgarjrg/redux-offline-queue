@@ -16,8 +16,8 @@ import {
     ANY_NON_QUEUEABLE_ACTION,
     ANY_QUEUEABLE_ACTION_NOT_IN_QUEUE,
     ANY_QUEUEABLE_ACTION_IN_QUEUE,
-    AUTO_ENQUEUE_TRUE,
-    AUTO_ENQUEUE_FALSE,
+    SUSPEND_SAGA_TRUE,
+    SUSPEND_SAGA_FALSE,
     RETRY_ALL,
     ENQUEUE_ACTION_NOT_IN_QUEUE,
     ENQUEUE_ACTION_IN_QUEUE,
@@ -37,7 +37,7 @@ import moment from 'moment'
 
 describe('from sixth state', () => {
 
-    describe(AUTO_ENQUEUE_TRUE, () => {
+    describe(SUSPEND_SAGA_TRUE, () => {
 
         it('should go to fift state', () => {
 
@@ -45,7 +45,7 @@ describe('from sixth state', () => {
                 () => {
                     const state = generateAnySuspendSagaState()
 
-                    const action = generateAction(AUTO_ENQUEUE_TRUE)
+                    const action = generateAction(SUSPEND_SAGA_TRUE)
                     const pipeline = passThroughPipeline(state, action)
                     const resultState = pipeline.store.getState()
 
@@ -62,7 +62,7 @@ describe('from sixth state', () => {
 
                 const state = generateAnySuspendSagaState()
 
-                const action = generateAction(AUTO_ENQUEUE_TRUE)
+                const action = generateAction(SUSPEND_SAGA_TRUE)
                 const pipeline = passThroughPipeline(state, action)
 
                 expect(pipeline.gotToReducerSpy).toHaveBeenCalledTimes(1)
@@ -80,7 +80,7 @@ describe('from sixth state', () => {
 
                 const state = generateAnySuspendSagaState()
 
-                const action = generateAction(AUTO_ENQUEUE_TRUE)
+                const action = generateAction(SUSPEND_SAGA_TRUE)
                 const pipeline = passThroughPipeline(state, action)
 
                 expect(pipeline.sagaMiddlewareSpy).toHaveBeenCalledTimes(1)
