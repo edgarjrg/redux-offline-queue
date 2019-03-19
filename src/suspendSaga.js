@@ -27,15 +27,17 @@ import INITIAL_STATE from './initialState'
  * @param {Function} middleware Saga middleware.
  */
 export default function suspendSaga(middleware) {
-  return store => (next) => (action) => {
+  return store => (next) => {
     const delegate = middleware(store)(next)
 
-    if (
-      shouldSuspendSaga(store, action)
-    ) {
-      return next(action)
-    } else {
-      return delegate(action)
+    return (action) => {
+      if (
+        shouldSuspendSaga(store, action)
+      ) {
+        return next(action)
+      } else {
+        return delegate(action)
+      }
     }
   }
 }
