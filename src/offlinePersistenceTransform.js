@@ -1,7 +1,7 @@
 import { createTransform } from 'redux-persist'
 import _ from 'lodash'
 
-const OMIT_KEYS = ['autoEnqueue']
+const OMIT_KEYS = ['suspendSaga']
 
 /**
  * Custom redux-persist transformation

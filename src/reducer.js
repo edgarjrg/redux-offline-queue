@@ -1,4 +1,4 @@
-import { REHYDRATE } from 'redux-persist'
+import { REHYDRATE, PURGE } from 'redux-persist'
 import { get, filter } from "lodash";
 
 import INITIAL_STATE from './initialState'
@@ -18,16 +18,19 @@ import { enhace } from './sharedAlgorithms/enhanceAction';
  */
 export default function reducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
-    case SUSPEND_SAGA: {
-      return { ...state, suspendSaga: action.payload.value }
-    }
-    case REHYDRATE: { // Handle rehydrating with custom shallow merge.
+    case PURGE:
+      return { ...INITIAL_STATE }
+    case REHYDRATE: {
+      // Handle rehydrating with custom shallow merge.
 
       if (action.payload && action.payload.offline) {
         return { ...state, ...action.payload.offline };
       }
 
       return state
+    }
+    case SUSPEND_SAGA: {
+      return { ...state, suspendSaga: action.payload.value }
     }
     case QUEUE_ACTION:
       return { ...state, queue: state.queue.concat(enhace(action.payload)) }
