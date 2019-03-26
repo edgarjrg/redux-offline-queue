@@ -12,6 +12,7 @@ export const RETRY_ALL = `${ACTION_PREFIX}RETRY_ALL`
 export const RETRY = `${ACTION_PREFIX}RETRY`
 export const REMOVE = `${ACTION_PREFIX}REMOVE`
 export const CONSUME = `${ACTION_PREFIX}CONSUME`
+export const RESET = `${ACTION_PREFIX}RESET`
 
 /**
  * Internal actions.
